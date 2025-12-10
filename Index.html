@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identificador Taxonómico - Munididae vs Munidopsidae</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-crab"></i> Identificador Taxonómico de Crustáceos</h1>
+            <p class="subtitle">Clave dicotómica para distinguir entre Munididae y Munidopsidae</p>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+                <div class="progress-text" id="progressText">Pregunta 1 de 6</div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Sección de la pregunta actual -->
+            <section class="question-section" id="questionSection">
+                <h2 id="questionTitle">Cargando pregunta...</h2>
+                <div class="question-image" id="questionImageContainer">
+                    <!-- La imagen se cargará dinámicamente -->
+                </div>
+                <p class="question-text" id="questionText"></p>
+                
+                <div class="options-container" id="optionsContainer">
+                    <!-- Las opciones se cargarán dinámicamente -->
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button id="prevBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <button id="nextBtn" class="btn btn-primary" disabled>
+                        Siguiente <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button id="resetBtn" class="btn btn-reset">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+            </section>
+
+            <!-- Sección de resultados (oculta inicialmente) -->
+            <section class="result-section" id="resultSection" style="display: none;">
+                <h2 id="resultTitle">Resultado de la Identificación</h2>
+                <div class="result-card" id="resultCard">
+                    <!-- El resultado se cargará dinámicamente -->
+                </div>
+                
+                <div class="result-details">
+                    <h3><i class="fas fa-info-circle"></i> Características Principales</h3>
+                    <div class="details-grid" id="detailsGrid">
+                        <!-- Los detalles se cargarán dinámicamente -->
+                    </div>
+                </div>
+                
+                <div class="specimen-log">
+                    <h3><i class="fas fa-clipboard-list"></i> Registrar Espécimen</h3>
+                    <p>Guarda la identificación de este espécimen en la base de datos para futuras referencias.</p>
+                    
+                    <form id="specimenForm">
+                        <div class="form-group">
+                            <label for="specimenName">Nombre del Espécimen (opcional):</label>
+                            <input type="text" id="specimenName" placeholder="Ej: CRB-001">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="collectionDate">Fecha de Colección:</label>
+                            <input type="date" id="collectionDate" value="">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="depth">Profundidad (metros):</label>
+                            <input type="number" id="depth" min="0" placeholder="Ej: 1250">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="location">Ubicación (opcional):</label>
+                            <input type="text" id="location" placeholder="Ej: Mar Caribe, Talud continental">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Notas Adicionales:</label>
+                            <textarea id="notes" rows="3" placeholder="Observaciones morfológicas adicionales..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" id="saveSpecimenBtn">
+                            <i class="fas fa-save"></i> Guardar en Base de Datos
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="newIdentificationBtn">
+                            <i class="fas fa-search"></i> Nueva Identificación
+                        </button>
+                    </form>
+                    
+                    <div id="saveResult" class="save-result"></div>
+                </div>
+                
+                <div class="history-section" id="historySection">
+                    <h3><i class="fas fa-history"></i> Identificaciones Recientes</h3>
+                    <div class="history-container" id="historyContainer">
+                        <p>Cargando historial...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Panel informativo lateral -->
+            <aside class="info-panel">
+                <h3><i class="fas fa-lightbulb"></i> Información Taxonómica</h3>
+                <div class="family-card" id="munididaeCard">
+                    <h4><i class="fas fa-fish"></i> Munididae</h4>
+                    <p>Langostas squat de aguas menos profundas. Ojos bien desarrollados con córneas pigmentadas.</p>
+                    <ul>
+                        <li><strong>Género típico:</strong> <em>Munida</em></li>
+                        <li><strong>Hábitat:</strong> Plataforma continental y talud superior</li>
+                        <li><strong>Profundidad:</strong> 0-2000 m</li>
+                    </ul>
+                </div>
+                
+                <div class="family-card" id="munidopsidaeCard">
+                    <h4><i class="fas fa-water"></i> Munidopsidae</h4>
+                    <p>Langostas squat de aguas profundas y abisales. Ojos reducidos o ausentes.</p>
+                    <ul>
+                        <li><strong>Género típico:</strong> <em>Munidopsis</em></li>
+                        <li><strong>Hábitat:</strong> Talud profundo y llanuras abisales</li>
+                        <li><strong>Profundidad:</strong> 1000-5000+ m</li>
+                    </ul>
+                </div>
+                
+                <div class="info-tips">
+                    <h4><i class="fas fa-microscope"></i> Consejos para la Identificación</h4>
+                    <ul>
+                        <li>Examina cuidadosamente los ojos y su pedúnculo</li>
+                        <li>Observa la forma del rostro (proyección frontal)</li>
+                        <li>Revisa la ornamentación del caparazón</li>
+                        <li>Considera la profundidad de colección</li>
+                    </ul>
+                </div>
+            </aside>
+        </main>
+
+        <footer>
+            <p>Sistema de Identificación Taxonómica - Desarrollado para investigación en carcinología</p>
+            <p class="footer-links">
+                <a href="#" id="toggleInstructions"><i class="fas fa-book"></i> Instrucciones</a>
+                <a href="#" id="toggleAbout"><i class="fas fa-info-circle"></i> Acerca de</a>
+                <a href="#" id="exportData"><i class="fas fa-download"></i> Exportar Datos</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Modal para instrucciones -->
+    <div class="modal" id="instructionsModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2><i class="fas fa-book-open"></i> Instrucciones de Uso</h2>
+            <ol>
+                <li>Comienza con la primera pregunta sobre las características del espécimen.</li>
+                <li>Selecciona la opción que mejor describa lo que observas.</li>
+                <li>Avanza a través de las preguntas hasta llegar a una identificación.</li>
+                <li>Puedes volver atrás en cualquier momento para cambiar tus respuestas.</li>
+                <li>Al finalizar, podrás guardar la identificación en la base de datos.</li>
+                <li>Consulta el historial para ver identificaciones anteriores.</li>
+            </ol>
+            <p><strong>Nota:</strong> Esta clave dicotómica está basada en características morfológicas observables. Para identificación taxonómica precisa, se recomienda consultar literatura especializada.</p>
+        </div>
+    </div>
+
+    <!-- Modal acerca de -->
+    <div class="modal" id="aboutModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2><i class="fas fa-info-circle"></i> Acerca de este Sistema</h2>
+            <p>Este sistema de identificación taxonómica está diseñado para ayudar a investigadores y estudiantes a distinguir entre dos familias de crustáceos anomuros:</p>
+            <ul>
+                <li><strong>Munididae</strong> (ej. <em>Munida</em>) - Langostas squat de aguas menos profundas</li>
+                <li><strong>Munidopsidae</strong> (ej. <em>Munidopsis</em>) - Langostas squat de aguas profundas</li>
+            </ul>
+            <p>La clave dicotómica se basa en características morfológicas como ojos, rostro, caparazón y hábitat.</p>
+            <p><strong>Tecnologías utilizadas:</strong> HTML, CSS, JavaScript, Supabase (Backend como Servicio)</p>
+            <p><strong>Desarrollado para:</strong> Investigación en carcinología y taxonomía de crustáceos</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
