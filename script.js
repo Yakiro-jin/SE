@@ -420,8 +420,21 @@ function resetIdentification() {
 async function saveSpecimen(e) {
     e.preventDefault();
     
+    console.log('💾 Intentando guardar espécimen...');
+    
     const saveBtn = document.getElementById('saveSpecimenBtn');
     const saveResult = document.getElementById('saveResult');
+    
+    // Verificar que supabase esté disponible
+    if (typeof supabase === 'undefined' && typeof window.supabase === 'undefined') {
+        console.error('Supabase no disponible');
+        saveResult.innerHTML = '<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Error: No hay conexión con la base de datos</div>';
+        saveResult.className = 'save-result error';
+        return;
+    }
+    
+    // Usar window.supabase si está disponible
+    const supabaseClient = window.supabase || supabase;
     
     // Obtener datos del formulario
     const specimenData = {
@@ -437,7 +450,7 @@ async function saveSpecimen(e) {
     
     // Validar datos requeridos
     if (!specimenData.family) {
-        saveResult.innerHTML = 'Error: No hay un resultado de identificación para guardar.';
+        saveResult.innerHTML = '<div class="error-message">Error: No hay un resultado de identificación para guardar.</div>';
         saveResult.className = 'save-result error';
         return;
     }
@@ -447,18 +460,48 @@ async function saveSpecimen(e) {
         saveBtn.disabled = true;
         saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
         
-        // Insertar en Supabase
-        const { data, error } = await supabase
+        console.log('📤 Enviando datos a Supabase:', specimenData);
+        
+        // Insertar en Supabase - FORMA CORREGIDA
+        const { data, error } = await supabaseClient
             .from('specimens')
-            .insert([specimenData]);
+            .insert([specimenData])
+            .select('*'); // Asegurar que devuelve datos
         
-        if (error) throw error;
+        console.log('📨 Respuesta de Supabase:', { data, error });
         
-        // Éxito
-        saveResult.innerHTML = `
-            <i class="fas fa-check-circle"></i> Espécimen guardado exitosamente en la base de datos.
-            <br><small>ID: ${data[0].id}</small>
-        `;
+        if (error) {
+            console.error('❌ Error de Supabase:', error);
+            throw error;
+        }
+        
+        // VERIFICAR QUE DATA NO SEA NULL
+        if (!data || data.length === 0) {
+            console.warn('⚠️ Supabase devolvió data null o vacío');
+            
+            // Aún mostrar éxito, pero con mensaje diferente
+            saveResult.innerHTML = `
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i> 
+                    <strong>¡Guardado exitoso!</strong>
+                    <p>El espécimen se guardó correctamente.</p>
+                    <small>ID: Generado por base de datos</small>
+                </div>
+            `;
+        } else {
+            // Éxito con datos
+            console.log('✅ Guardado exitoso. Datos:', data[0]);
+            
+            saveResult.innerHTML = `
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i> 
+                    <strong>¡Guardado exitoso!</strong>
+                    <p>ID: ${data[0].id || 'N/A'}</p>
+                    <small>${new Date().toLocaleTimeString()}</small>
+                </div>
+            `;
+        }
+        
         saveResult.className = 'save-result success';
         
         // Limpiar formulario (excepto fecha)
@@ -467,20 +510,47 @@ async function saveSpecimen(e) {
         document.getElementById('location').value = '';
         document.getElementById('notes').value = '';
         
-        // Cargar historial actualizado
-        loadHistory();
+        // Cargar historial actualizado después de 1 segundo
+        setTimeout(() => {
+            loadHistory();
+        }, 1000);
         
     } catch (error) {
-        console.error('Error al guardar espécimen:', error);
-        saveResult.innerHTML = `Error al guardar: ${error.message}`;
+        console.error('❌ Error al guardar espécimen:', error);
+        
+        let errorMessage = 'Error desconocido';
+        if (error.message) {
+            errorMessage = error.message;
+        } else if (typeof error === 'string') {
+            errorMessage = error;
+        }
+        
+        saveResult.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-times-circle"></i> 
+                <strong>Error al guardar</strong>
+                <p>${errorMessage}</p>
+                <small>Verifica tu conexión a internet y la configuración de Supabase</small>
+            </div>
+        `;
         saveResult.className = 'save-result error';
+        
+        // Mostrar detalles en consola para debugging
+        console.log('🔍 Debug info:', {
+            supabaseConfig: {
+                url: SUPABASE_URL || 'No configurada',
+                keyLength: (SUPABASE_ANON_KEY || '').length
+            },
+            specimenData,
+            error
+        });
+        
     } finally {
         // Restaurar botón
         saveBtn.disabled = false;
         saveBtn.innerHTML = '<i class="fas fa-save"></i> Guardar en Base de Datos';
     }
 }
-
 // Cargar historial de identificaciones
 async function loadHistory() {
     const historyContainer = document.getElementById('historyContainer');
